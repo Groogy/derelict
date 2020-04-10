@@ -3,18 +3,16 @@ project(cpptest
 		VERSION 0.1.0
 		LANGUAGES CXX)
 
-
 # C++ Version
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # C++ Warnings
-if ( CMAKE_COMPILER_IS_GNUCC )
-	set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
-endif()
-if ( MSVC )
+if ( CMAKE_COMPILER_IS_MSVC )
 	set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} /W4 /WX")
+else()
+	set(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
 endif()
 
 # Include Libraries
