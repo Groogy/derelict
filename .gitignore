@@ -1,0 +1,5 @@
+# Editor Generated Files
+.vscode/*
+
+# Build Generated Files
+build/*
