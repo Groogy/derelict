@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(cpptest 
+project(ludumdare46 
 		VERSION 0.1.0
 		LANGUAGES CXX)
 
@@ -17,12 +17,16 @@ endif()
 
 # Include Libraries
 find_package(SFML 2 COMPONENTS system window graphics audio REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(OpenGL REQUIRED)
 
 # Source Folders
 set(SOURCES
 	main.cpp
 	assert_linux.cpp
 	assert_windows.cpp
+	renderer.cpp
+	vertex.cpp
 )
 
 foreach(FILE ${SOURCES})
@@ -31,4 +35,4 @@ endforeach(FILE)
 
 # Build Project
 add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
-target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-audio sfml-window sfml-system)
+target_link_libraries(${PROJECT_NAME} sfml-graphics sfml-audio sfml-window sfml-system ${GLEW_LIBRARIES} ${OPENGL_LIBRARIES})
