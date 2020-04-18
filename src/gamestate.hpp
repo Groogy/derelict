@@ -3,6 +3,7 @@
 #include "renderer.hpp"
 #include "earth.hpp"
 #include "player_input.hpp"
+#include "camera2d.hpp"
 
 #include <SFML/Graphics/Shader.hpp>
 #include <SFML/Graphics/Texture.hpp>
@@ -35,6 +36,8 @@ private:
 	PlayerInput myInput;
 	Earth myEarth;
 
+	Camera2D myCamera;
+
 	sf::Shader myEarthShader;
-	sf::Texture myEarthTexture;
+	sf::Shader myTilemapShader;
 };

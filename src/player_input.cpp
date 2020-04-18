@@ -17,27 +17,27 @@ void PlayerInput::processEvent(const sf::Event& event)
 	}
 }
 
-float PlayerInput::getCameraOffsetChange() const
-{
-	float change = 0;
-	if(myActions[In])
-		change += -1;
-	if(myActions[Out])
-		change += 1;
-	return change;
-}
-
-sf::Vector2f PlayerInput::getCameraRotationChange() const
+sf::Vector2f PlayerInput::getCameraMovement() const
 {
 	sf::Vector2f change;
 	if(myActions[Left])
-		change.x += 1;
+		change.x -= 0.01;
 	if(myActions[Right])
-		change.x -= 1;
+		change.x += 0.01;
 	if(myActions[Up])
-		change.y += 1;
+		change.y -= 0.01;
 	if(myActions[Down])
-		change.y -= 1;
+		change.y += 0.01;
+	return change;
+}
+
+float PlayerInput::getCameraZoomChange() const
+{
+	float change = 0;
+	if(myActions[In])
+		change += -0.01;
+	if(myActions[Out])
+		change += 0.01;
 	return change;
 }
 

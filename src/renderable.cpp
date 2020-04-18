@@ -23,3 +23,4 @@ const std::vector<IndexType>& Renderable::getIndices() const
 {
 	return myIndices;
 }
+

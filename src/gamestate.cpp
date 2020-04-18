@@ -5,15 +5,20 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Time.hpp>
 
+#include <SFML/OpenGL.hpp>
+
+#include <cmath>
+
 GameState::GameState(sf::RenderWindow& window)
 : myWindow(window)
 , myRenderer(window)
 {
-	myRenderer.accessCamera().setOffset(11);
+	myRenderer.accessCamera().setOffset(14);
+	myRenderer.accessCamera().setRotation(sf::Vector2f(0, -45.f));
 
 	myEarthShader.loadFromFile("earth.vertex", "earth.fragment");
-	myEarthTexture.loadFromFile("earth.png");
-	myEarthShader.setUniform("terrainSampler", myEarthTexture);
+	myTilemapShader.loadFromFile("default.vertex", "tilemap.fragment");
+	myEarthShader.setUniform("terrainSampler", myEarth.getTilemap().getTexture());
 }
 
 GameState::~GameState()
@@ -52,17 +57,22 @@ void GameState::handleEvents()
 
 void GameState::handleTick()
 {
-	auto transform = myRenderer.getCamera().getTransform();
-	transform.offset += myInput.getCameraOffsetChange();
-	transform.rotation += myInput.getCameraRotationChange();
-	transform.offset = std::clamp(transform.offset, 10.1f, 20.f);
-	myRenderer.accessCamera().setTransform(transform);
+	myCamera.zoom(myInput.getCameraZoomChange());
+	auto movement = myInput.getCameraMovement();
+	float zoom = myCamera.getZoom();
+	movement *= zoom;
+	myCamera.move(movement);
+
+	auto& camera3d = myRenderer.accessCamera();
+	camera3d.setRotation(camera3d.getRotation() + sf::Vector2f(0.2, 0.0));
 }
 
 void GameState::handleRender()
 {
 	myRenderer.clear();
 	myRenderer.draw(myEarth, &myEarthShader);
+
+	sf::Shader::bind(nullptr);
 }
 
 void GameState::handleUI()
@@ -73,4 +83,19 @@ void GameState::handleUI()
 	shape.setSize(sf::Vector2f(100, 100));
 
 	myRenderer.draw(shape);
+
+	auto& tilemap = myEarth.getTilemap();
+	tilemap.prepareShader(myTilemapShader, myCamera);
+	myRenderer.draw(tilemap, &myTilemapShader);
+
+	auto windowSize = myWindow.getSize();
+	sf::VertexArray line(sf::Lines, 4);
+	float width = windowSize.x / 8;
+	float height = windowSize.y / 8;
+	line[0] = sf::Vertex(sf::Vector2f(windowSize.x - width, 0));
+	line[1] = sf::Vertex(sf::Vector2f(windowSize.x - width, height*2));
+	line[2] = sf::Vertex(sf::Vector2f(windowSize.x - width*2, height));
+	line[3] = sf::Vertex(sf::Vector2f(windowSize.x, height));
+	myRenderer.draw(line);
 }
+

@@ -6,6 +6,7 @@
 #include <cmath>
 
 Earth::Earth()
+: myTilemap("earth.png")
 {
 	generateSphere(10.0);
 }
@@ -13,6 +14,16 @@ Earth::Earth()
 Earth::~Earth()
 {
 	
+}
+
+const Tilemap& Earth::getTilemap() const
+{
+	return myTilemap;
+}
+
+Tilemap& Earth::accessTilemap()
+{
+	return myTilemap;
 }
 
 void Earth::generateSphere(float radius)

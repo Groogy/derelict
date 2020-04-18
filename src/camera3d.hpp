@@ -5,11 +5,12 @@
 
 #include <SFML/System/Vector2.hpp>
 
-class Camera
+class Camera3D
 {
 public:
-	void setSize(sf::Vector2u size);
-	sf::Vector2u getSize() const;
+	void setViewport(sf::Vector2i pos, sf::Vector2i size);
+
+	sf::Vector2i getSize() const;
 
 	void setTransform(Transform transform);
 	Transform getTransform() const;
@@ -21,6 +22,6 @@ public:
 	sf::Vector2f getRotation() const;
 
 private:
-	sf::Vector2u mySize;
+	sf::Vector2i mySize;
 	Transform myTransform;
 };

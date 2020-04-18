@@ -47,12 +47,12 @@ Renderer::Renderer(sf::RenderTarget& target)
 	//glCullFace(GL_BACK);
 }
 
-const Camera& Renderer::getCamera() const
+const Camera3D& Renderer::getCamera() const
 {
 	return myCamera;
 }
 
-Camera& Renderer::accessCamera()
+Camera3D& Renderer::accessCamera()
 {
 	return myCamera;
 }
@@ -60,7 +60,10 @@ Camera& Renderer::accessCamera()
 void Renderer::notifyResize(sf::Vector2u size)
 {
 	setActive();
-	myCamera.setSize(size);
+
+	sf::Vector2i viewportSize = static_cast<sf::Vector2i>(size) / 4;
+	sf::Vector2i viewportPosition = static_cast<sf::Vector2i>(size) - viewportSize;
+	myCamera.setViewport(viewportPosition, viewportSize);
 }
 
 void Renderer::clear()
@@ -99,9 +102,9 @@ void Renderer::draw(const std::vector<Vertex>& vertices, const std::vector<Index
 	glPopMatrix();
 }
 
-void Renderer::draw(const sf::Drawable& drawable)
+void Renderer::draw(const sf::Drawable& drawable, sf::RenderStates states)
 {
-	myTarget.draw(drawable);
+	myTarget.draw(drawable, states);
 }
 
 void Renderer::draw(const Renderable& renderable, sf::Shader* shader)

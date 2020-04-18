@@ -1,17 +1,17 @@
-#include "camera.hpp"
+#include "camera3d.hpp"
 
 #include <SFML/OpenGL.hpp>
 
 #include <cmath>
 
-void Camera::setSize(sf::Vector2u size)
+void Camera3D::setViewport(sf::Vector2i pos, sf::Vector2i size)
 {
 	constexpr float Pi = 3.141592654f;
 
 	REQUIRES_P(size.y != 0);
 	float aspect = static_cast<float>(size.x) / size.y;
 	float fov = std::tan(90.0 * Pi / 360.0);
-	glViewport(0, 0, size.x, size.y);
+	glViewport(pos.x, pos.y, size.x, size.y);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	float znear = 0.1;
@@ -25,37 +25,37 @@ void Camera::setSize(sf::Vector2u size)
 	glLoadIdentity();
 }
 
-sf::Vector2u Camera::getSize() const
+sf::Vector2i Camera3D::getSize() const
 {
 	return mySize;
 }
 
-void Camera::setTransform(Transform transform)
+void Camera3D::setTransform(Transform transform)
 {
 	myTransform = transform;
 }
 
-Transform Camera::getTransform() const
+Transform Camera3D::getTransform() const
 {
 	return myTransform;
 }
 
-void Camera::setOffset(float offset)
+void Camera3D::setOffset(float offset)
 {
 	myTransform.offset = offset;
 }
 
-float Camera::getOffset() const
+float Camera3D::getOffset() const
 {
 	return myTransform.offset;
 }
 
-void Camera::setRotation(sf::Vector2f rotation)
+void Camera3D::setRotation(sf::Vector2f rotation)
 {
 	myTransform.rotation = rotation;
 }
 
-sf::Vector2f Camera::getRotation() const
+sf::Vector2f Camera3D::getRotation() const
 {
 	return myTransform.rotation;
 }

@@ -1,0 +1,12 @@
+#version 120
+
+uniform sampler2D terrainSampler;
+uniform vec2 cameraPosition;
+uniform float cameraZoom;
+
+void main()
+{
+	vec2 texCoord = gl_TexCoord[0].st * cameraZoom + cameraPosition;
+	vec4 terrain = texture2D(terrainSampler, texCoord);
+	gl_FragColor = terrain;
+}

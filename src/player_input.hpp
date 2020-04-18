@@ -15,8 +15,8 @@ class PlayerInput
 public:
 	void processEvent(const sf::Event& event);
 
-	float getCameraOffsetChange() const;
-	sf::Vector2f getCameraRotationChange() const;
+	sf::Vector2f getCameraMovement() const;
+	float getCameraZoomChange() const;
 
 private:
 	enum Action
