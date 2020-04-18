@@ -27,6 +27,12 @@ set(SOURCES
 	assert_windows.cpp
 	renderer.cpp
 	vertex.cpp
+	camera.cpp
+	transform.cpp
+	renderable.cpp
+	earth.cpp
+	gamestate.cpp
+	player_input.cpp
 )
 
 foreach(FILE ${SOURCES})
