@@ -55,6 +55,7 @@ void GameState::handleTick()
 	auto transform = myRenderer.getCamera().getTransform();
 	transform.offset += myInput.getCameraOffsetChange();
 	transform.rotation += myInput.getCameraRotationChange();
+	transform.offset = std::clamp(transform.offset, 10.1f, 20.f);
 	myRenderer.accessCamera().setTransform(transform);
 }
 
