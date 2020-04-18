@@ -31,10 +31,10 @@ public:
 	void notifyResize(sf::Vector2u size);
 
 	void clear();
-	void draw(const std::vector<Vertex>& vertices, sf::PrimitiveType primitive, Transform transform = Transform::Identity);
-	void draw(const std::vector<Vertex>& vertices, const std::vector<IndexType>& indices, sf::PrimitiveType primitive, Transform transform = Transform::Identity);
+	void draw(const std::vector<Vertex>& vertices, sf::PrimitiveType primitive, Transform transform = Transform::Identity, sf::Shader* shader = nullptr);
+	void draw(const std::vector<Vertex>& vertices, const std::vector<IndexType>& indices, sf::PrimitiveType primitive, Transform transform = Transform::Identity, sf::Shader* shader = nullptr);
 	void draw(const sf::Drawable& drawable);
-	void draw(const Renderable& renderable);
+	void draw(const Renderable& renderable, sf::Shader* shader = nullptr);
 	
 private:
 	friend class RenderStackState;
@@ -42,6 +42,8 @@ private:
 	void setActive();
 	void applyTransformation(Transform transform);
 	void applyInverseTransformation(Transform transform);
+
+	void setupShader(sf::Shader* shader);
 
 	sf::RenderTarget& myTarget;
 	Camera myCamera;

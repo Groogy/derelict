@@ -4,6 +4,10 @@
 #include "earth.hpp"
 #include "player_input.hpp"
 
+#include <SFML/Graphics/Shader.hpp>
+#include <SFML/Graphics/Texture.hpp>
+#include <SFML/System/Clock.hpp>
+
 namespace sf
 {
 	class RenderWindow;
@@ -26,7 +30,11 @@ private:
 	void handleUI();
 
 	sf::RenderWindow& myWindow;
+	sf::Clock myClock;
 	Renderer myRenderer;
 	PlayerInput myInput;
 	Earth myEarth;
+
+	sf::Shader myEarthShader;
+	sf::Texture myEarthTexture;
 };

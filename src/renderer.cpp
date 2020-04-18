@@ -2,6 +2,9 @@
 #include "contracts.hpp"
 #include "renderable.hpp"
 
+#define GL_GLEXT_PROTOTYPES
+
+#include <SFML/Graphics/Shader.hpp>
 #include <SFML/OpenGL.hpp>
 
 namespace
@@ -37,24 +40,11 @@ Renderer::Renderer(sf::RenderTarget& target)
 : myTarget(target)
 {
 	notifyResize(target.getSize());
-	float ambient[] = { 0.1, 0.1, 0.1, 1.0 };
-	float diffuse[] = { 1.0, 1.0, 1.0, 1.0 };
-	float position[] = { 5.0, 5.0, 5.0, 0.0 };
 
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
-
-	glEnable(GL_CULL_FACE);
-	//glCullFace(GL_FRONT);
-
-	glEnable(GL_LIGHT0);
-	//glEnable(GL_NORMALIZE);
-	glEnable(GL_COLOR_MATERIAL);
-	glEnable(GL_LIGHTING);
-	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
-	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-	glLightfv(GL_LIGHT0, GL_SPECULAR, diffuse);
-	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	//glEnable(GL_CULL_FACE);
+	//glCullFace(GL_BACK);
 }
 
 const Camera& Renderer::getCamera() const
@@ -80,18 +70,20 @@ void Renderer::clear()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::draw(const std::vector<Vertex>& vertices, sf::PrimitiveType primitive, Transform transform)
+void Renderer::draw(const std::vector<Vertex>& vertices, sf::PrimitiveType primitive, Transform transform, sf::Shader* shader)
 {
 	std::vector<IndexType> indices;
 	indices.reserve(vertices.size());
 	for(IndexType index = 0; index < vertices.size(); index++)
 		indices.push_back(index);
 	
-	draw(vertices, indices, primitive, transform);
+	draw(vertices, indices, primitive, transform, shader);
 }
 
-void Renderer::draw(const std::vector<Vertex>& vertices, const std::vector<IndexType>& indices, sf::PrimitiveType primitive, Transform transform)
+void Renderer::draw(const std::vector<Vertex>& vertices, const std::vector<IndexType>& indices, sf::PrimitiveType primitive, Transform transform, sf::Shader* shader)
 {
+	setupShader(shader);
+
 	glPushMatrix();
 	applyInverseTransformation(myCamera.getTransform());
 	applyTransformation(transform);
@@ -101,7 +93,7 @@ void Renderer::draw(const std::vector<Vertex>& vertices, const std::vector<Index
 		const auto& vertex = vertices[index];
 		glVertex3f(vertex.position.x, vertex.position.y, vertex.position.z);
 		glTexCoord2f(vertex.texcoord.x, vertex.texcoord.y);
-		glNormal3f(vertex.normal.x, vertex.normal.y, vertex.normal.z);
+		//glNormal3f(vertex.normal.x, vertex.normal.y, vertex.normal.z);
 	}
 	glEnd();
 	glPopMatrix();
@@ -112,9 +104,9 @@ void Renderer::draw(const sf::Drawable& drawable)
 	myTarget.draw(drawable);
 }
 
-void Renderer::draw(const Renderable& renderable)
+void Renderer::draw(const Renderable& renderable, sf::Shader* shader)
 {
-	draw(renderable.getVertices(), renderable.getIndices(), sf::Triangles, renderable.getTransform());
+	draw(renderable.getVertices(), renderable.getIndices(), sf::Triangles, renderable.getTransform(), shader);
 }
 
 void Renderer::setActive()
@@ -134,4 +126,12 @@ void Renderer::applyInverseTransformation(Transform transform)
 	glTranslatef(0, 0, -transform.offset);
 	glRotatef(transform.rotation.y, 1.0, 0.0, 0.0);
 	glRotatef(transform.rotation.x, 0.0, 0.0, 1.0);
+}
+
+void Renderer::setupShader(sf::Shader* shader)
+{
+	sf::Shader::bind(shader);
+	//int program = 0;
+	//glGetIntegerv(GL_CURRENT_PROGRAM, &program);
+	//locVertex = glGetAttribLocation(program, "position");
 }

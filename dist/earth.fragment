@@ -1,0 +1,9 @@
+#version 120
+
+uniform sampler2D terrainSampler;
+
+void main()
+{
+	vec4 terrain = texture2D(terrainSampler, gl_TexCoord[0].st);
+	gl_FragColor = terrain;
+}

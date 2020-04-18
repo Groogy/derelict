@@ -3,12 +3,17 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
+#include <SFML/System/Time.hpp>
 
 GameState::GameState(sf::RenderWindow& window)
 : myWindow(window)
 , myRenderer(window)
 {
-	myRenderer.accessCamera().setOffset(2);
+	myRenderer.accessCamera().setOffset(11);
+
+	myEarthShader.loadFromFile("earth.vertex", "earth.fragment");
+	myEarthTexture.loadFromFile("earth.png");
+	myEarthShader.setUniform("terrainSampler", myEarthTexture);
 }
 
 GameState::~GameState()
@@ -23,7 +28,11 @@ bool GameState::isRunning() const
 void GameState::update()
 {
 	handleEvents();
-	handleTick();
+	if(myClock.getElapsedTime() > sf::milliseconds(20))
+	{
+		myClock.restart();
+		handleTick();
+	}
 	handleRender();
 	handleUI();
 }
@@ -44,15 +53,15 @@ void GameState::handleEvents()
 void GameState::handleTick()
 {
 	auto transform = myRenderer.getCamera().getTransform();
-	transform.offset += myInput.getCameraOffsetChange() / 1000;
-	transform.rotation += myInput.getCameraRotationChange() * 0.01f;
+	transform.offset += myInput.getCameraOffsetChange();
+	transform.rotation += myInput.getCameraRotationChange();
 	myRenderer.accessCamera().setTransform(transform);
 }
 
 void GameState::handleRender()
 {
 	myRenderer.clear();
-	myRenderer.draw(myEarth);
+	myRenderer.draw(myEarth, &myEarthShader);
 }
 
 void GameState::handleUI()
