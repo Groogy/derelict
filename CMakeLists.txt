@@ -43,6 +43,7 @@ set(SOURCES
 	label.cpp
 	energy.cpp
 	button.cpp
+	building.cpp
 )
 
 foreach(FILE ${SOURCES})

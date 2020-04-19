@@ -3,8 +3,10 @@
 #include "contracts.hpp"
 
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Graphics/Color.hpp>
 
 class Terrain;
+class Building;
 
 class Tile
 {
@@ -14,10 +16,16 @@ public:
 	sf::Vector2i getPos() const;
 	const Terrain* getTerrain() const;
 
+	void setBuilding(const Building* building);
+	const Building* getBuilding() const;
+
+	sf::Color calculateColor() const;
+
 	std::string getInfoStr() const;
 private:
 	sf::Vector2i myPos;
-	const Terrain* myTerrain;
+	const Terrain* myTerrain = nullptr;
+	const Building* myBuilding = nullptr;
 
 	BEGIN_INVARIANT(Tile)
 		INVARIANT(self.myTerrain != nullptr);

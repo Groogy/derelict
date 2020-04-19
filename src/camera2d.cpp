@@ -33,7 +33,6 @@ float Camera2D::getZoom() const
 
 void Camera2D::setZoom(float value)
 {
-	//REQUIRES_P(value >= 0.05 && myZoom <= 0.2);
 	myZoom = value;
 }
 

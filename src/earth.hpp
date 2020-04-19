@@ -20,6 +20,10 @@ public:
 	const Energy& getEnergy() const;
 	Energy& accessEnergy();
 
+	bool canBuild(const Building& building) const;
+	bool canBuildOn(sf::Vector2i pos, const Building& building) const;
+	void buildOn(sf::Vector2i pos, const Building& building);
+
 	void update();
 
 private:

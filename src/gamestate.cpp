@@ -9,18 +9,21 @@
 
 #include <cmath>
 
+extern sf::Color TerrainPalette[];
+
 GameState::GameState(sf::RenderWindow& window)
 : myWindow(window)
 , myRenderer(window)
 {
-	myRenderer.accessCamera().setOffset(14);
+	myRenderer.accessCamera().setOffset(14.1);
 	myRenderer.accessCamera().setRotation(sf::Vector2f(0, -45.f));
 
 	myEarthShader.loadFromFile("earth.vertex", "earth.fragment");
 	myTilemapShader.loadFromFile("default.vertex", "tilemap.fragment");
 	myEarthShader.setUniform("terrainSampler", myEarth.getTilemap().getTexture());
 
-	myTopbar.setup(myEarth, static_cast<sf::Vector2i>(myWindow.getSize()), myCamera);
+	myTopbar.setupBuildings();
+	myTopbar.setupGui(myEarth, static_cast<sf::Vector2i>(myWindow.getSize()), myCamera);
 }
 
 GameState::~GameState()
@@ -35,6 +38,7 @@ bool GameState::isRunning() const
 void GameState::update()
 {
 	sf::Time delta = myClock.restart();
+	myTimeSinceStart += delta;
 	myTimeSinceLastTick += delta;
 	handleEvents(delta);
 	if(myTimeSinceLastTick > sf::seconds(1.0))
@@ -78,6 +82,19 @@ void GameState::handleTick()
 
 void GameState::handleRender()
 {
+	sf::Glsl::Vec4 Tmp[6];
+	for(int index = 0; index < 6; index++)
+	{
+		sf::Color color = TerrainPalette[index];
+		Tmp[index] = sf::Glsl::Vec4(
+			static_cast<float>(color.r) / 256, 
+			static_cast<float>(color.g) / 256, 
+			static_cast<float>(color.b) / 256, 
+			static_cast<float>(color.a) / 256
+		);
+	}
+	myEarthShader.setUniformArray("colorPalette", Tmp, 6);
+
 	myEarth.accessTilemap().updateTexture();
 	myRenderer.clear();
 	myRenderer.draw(myEarth, &myEarthShader);
@@ -90,7 +107,7 @@ void GameState::handleUI()
 	RenderStackState state(myRenderer);
 
 	auto& tilemap = myEarth.getTilemap();
-	tilemap.prepareShader(myTilemapShader, myCamera);
+	tilemap.prepareShader(myTilemapShader, myCamera, myTimeSinceStart);
 	myRenderer.draw(tilemap, &myTilemapShader);
 
 	myTopbar.render(myRenderer);

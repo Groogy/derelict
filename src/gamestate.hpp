@@ -34,6 +34,7 @@ private:
 	sf::RenderWindow& myWindow;
 	sf::Clock myClock;
 	sf::Time myTimeSinceLastTick;
+	sf::Time myTimeSinceStart;
 	Renderer myRenderer;
 	PlayerInput myInput;
 	Earth myEarth;

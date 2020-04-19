@@ -1,5 +1,6 @@
 #include "earth.hpp"
 #include "macros.hpp"
+#include "building.hpp"
 
 #include <iostream>
 
@@ -44,6 +45,32 @@ const Energy& Earth::getEnergy() const
 Energy& Earth::accessEnergy()
 {
 	return myEnergy;
+}
+
+bool Earth::canBuild(const Building& building) const
+{
+	if(myEnergy.getValue() < building.getEnergyCost())
+		return false;
+
+	return true;
+}
+
+bool Earth::canBuildOn(sf::Vector2i pos, const Building& building) const
+{
+	if(!canBuild(building))
+		return false;
+
+	auto tile = myTilemap.getTile(pos);
+	if(tile.getBuilding())
+		return false;
+		
+	return true;
+}
+
+void Earth::buildOn(sf::Vector2i pos, const Building& building)
+{
+	myTilemap.setBuilding(pos, &building);
+	myEnergy.add(-building.getEnergyCost());
 }
 
 void Earth::update()

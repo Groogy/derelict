@@ -1,9 +1,17 @@
-#version 120
+#version 130
 
 uniform sampler2D terrainSampler;
+uniform vec4 colorPalette[6];
+
+vec4 calculateColor(vec2 coord)
+{
+	vec4 data = texture2D(terrainSampler, coord);
+	return colorPalette[int(data.r*256)];
+}
 
 void main()
 {
-	vec4 terrain = texture2D(terrainSampler, gl_TexCoord[0].st);
-	gl_FragColor = terrain;
+	vec2 texCoords = gl_TexCoord[0].st;
+	vec4 color = calculateColor(texCoords);
+	gl_FragColor = color;
 }

@@ -7,12 +7,13 @@
 class Terrain
 {
 public:
-	Terrain(const std::string& name, sf::Color color);
+	Terrain(const std::string& name, int colorId);
 
 	const std::string& getName() const;
 	sf::Color getColor() const;
+	int getColorId() const;
 
 private:
 	std::string myName;
-	sf::Color myColor;
+	int myColorId;
 };

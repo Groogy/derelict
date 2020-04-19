@@ -1,8 +1,10 @@
 #include "terrain.hpp"
 
-Terrain::Terrain(const std::string& name, sf::Color color)
+extern sf::Color TerrainPalette[];
+
+Terrain::Terrain(const std::string& name, int colorId)
 : myName(name)
-, myColor(color)
+, myColorId(colorId)
 {
 
 }
@@ -14,5 +16,10 @@ const std::string& Terrain::getName() const
 
 sf::Color Terrain::getColor() const
 {
-	return myColor;
+	return TerrainPalette[myColorId];
+}
+
+int Terrain::getColorId() const
+{
+	return myColorId;
 }

@@ -8,6 +8,7 @@
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
+#include <SFML/System/Time.hpp>
 
 #include <vector>
 #include <memory>
@@ -18,6 +19,7 @@ namespace sf
 }
 
 class Camera2D;
+class Building;
 
 class Tilemap : public sf::Drawable
 {
@@ -28,12 +30,18 @@ public:
 	void updateTexture();
 
 	const sf::Texture& getTexture() const;
-	void prepareShader(sf::Shader& shader, const Camera2D& camera) const;
+	void prepareShader(sf::Shader& shader, const Camera2D& camera, sf::Time timeSinceStart) const;
 
 	const Terrain* findTerrainFromColor(sf::Color color) const;
 
 	const Tile& findTileFromClick(const sf::Vector2i click, const Camera2D& camera) const;
+	const Tile& getTile(const sf::Vector2i pos) const;
+
 	void selectTile(sf::Vector2i pos);
+	void resetSelected();
+	void setBuilding(sf::Vector2i pos, const Building* building);
+
+	const std::vector<Tile>& getTiles() const;
 
 private:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;

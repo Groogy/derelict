@@ -9,6 +9,7 @@ public:
 	float calculateChange(const Earth& earth) const;
 
 	float getValue() const;
+	void add(float value);
 
 private:
 	float myValue = 10;
