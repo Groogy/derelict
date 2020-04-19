@@ -19,6 +19,8 @@ GameState::GameState(sf::RenderWindow& window)
 	myEarthShader.loadFromFile("earth.vertex", "earth.fragment");
 	myTilemapShader.loadFromFile("default.vertex", "tilemap.fragment");
 	myEarthShader.setUniform("terrainSampler", myEarth.getTilemap().getTexture());
+
+	myTopbar.setup(myEarth);
 }
 
 GameState::~GameState()
@@ -32,17 +34,19 @@ bool GameState::isRunning() const
 
 void GameState::update()
 {
-	handleEvents();
-	if(myClock.getElapsedTime() > sf::milliseconds(20))
+	sf::Time delta = myClock.restart();
+	myTimeSinceLastTick += delta;
+	handleEvents(delta);
+	if(myTimeSinceLastTick > sf::seconds(1.0))
 	{
-		myClock.restart();
+		myTimeSinceLastTick = sf::Time::Zero;
 		handleTick();
 	}
 	handleRender();
 	handleUI();
 }
 
-void GameState::handleEvents()
+void GameState::handleEvents(sf::Time delta)
 {
 	sf::Event event;
 	while(myWindow.pollEvent(event))
@@ -52,19 +56,24 @@ void GameState::handleEvents()
 			myWindow.close();
 		}
 		myInput.processEvent(event);
+		myTopbar.processEvent(event);
 	}
+
+	float seconds = delta.asSeconds();
+	myCamera.zoom(myInput.getCameraZoomChange() * seconds);
+	auto movement = myInput.getCameraMovement();
+	float zoom = myCamera.getZoom();
+	movement *= zoom;
+	myCamera.move(movement * seconds);
+
+	auto& camera3d = myRenderer.accessCamera();
+	camera3d.setRotation(camera3d.getRotation() + sf::Vector2f(4.0 * seconds, 0.0));
 }
 
 void GameState::handleTick()
 {
-	myCamera.zoom(myInput.getCameraZoomChange());
-	auto movement = myInput.getCameraMovement();
-	float zoom = myCamera.getZoom();
-	movement *= zoom;
-	myCamera.move(movement);
-
-	auto& camera3d = myRenderer.accessCamera();
-	camera3d.setRotation(camera3d.getRotation() + sf::Vector2f(0.2, 0.0));
+	 myEarth.update();
+	 myTopbar.update();
 }
 
 void GameState::handleRender()
@@ -78,15 +87,12 @@ void GameState::handleRender()
 void GameState::handleUI()
 {
 	RenderStackState state(myRenderer);
-	sf::RectangleShape shape;
-	shape.setFillColor(sf::Color::Yellow);
-	shape.setSize(sf::Vector2f(100, 100));
-
-	myRenderer.draw(shape);
 
 	auto& tilemap = myEarth.getTilemap();
 	tilemap.prepareShader(myTilemapShader, myCamera);
 	myRenderer.draw(tilemap, &myTilemapShader);
+
+	myTopbar.render(myRenderer);
 
 	auto windowSize = myWindow.getSize();
 	sf::VertexArray line(sf::Lines, 4);

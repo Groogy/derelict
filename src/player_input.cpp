@@ -21,13 +21,13 @@ sf::Vector2f PlayerInput::getCameraMovement() const
 {
 	sf::Vector2f change;
 	if(myActions[Left])
-		change.x -= 0.01;
+		change.x -= 1.f;
 	if(myActions[Right])
-		change.x += 0.01;
+		change.x += 1.f;
 	if(myActions[Up])
-		change.y -= 0.01;
+		change.y -= 1.f;
 	if(myActions[Down])
-		change.y += 0.01;
+		change.y += 1.f;
 	return change;
 }
 
@@ -35,9 +35,9 @@ float PlayerInput::getCameraZoomChange() const
 {
 	float change = 0;
 	if(myActions[In])
-		change += -0.01;
+		change += -0.5f;
 	if(myActions[Out])
-		change += 0.01;
+		change += 0.5f;
 	return change;
 }
 

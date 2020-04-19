@@ -26,6 +26,32 @@ Tilemap& Earth::accessTilemap()
 	return myTilemap;
 }
 
+const Homeostasis& Earth::getHomeostasis() const
+{
+	return myHomeostasis;
+}
+
+Homeostasis& Earth::accessHomeostasis()
+{
+	return myHomeostasis;
+}
+
+const Energy& Earth::getEnergy() const
+{
+	return myEnergy;
+}
+
+Energy& Earth::accessEnergy()
+{
+	return myEnergy;
+}
+
+void Earth::update()
+{
+	myHomeostasis.update(*this);
+	myEnergy.update(*this);
+}
+
 void Earth::generateSphere(float radius)
 {
 	constexpr float Pi = 3.141592654f;

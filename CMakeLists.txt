@@ -37,6 +37,12 @@ set(SOURCES
 	terrain.cpp
 	tile.cpp
 	tilemap.cpp
+	homeostasis.cpp
+	topbar.cpp
+	guiobject.cpp
+	label.cpp
+	energy.cpp
+	button.cpp
 )
 
 foreach(FILE ${SOURCES})

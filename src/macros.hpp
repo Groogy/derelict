@@ -2,6 +2,7 @@
 
 #include <sstream>
 #include <algorithm>
+#include <cmath>
 
 #define PP_STRING(a) #a
 #define PP_CONCAT2(a,b)  a##b
@@ -17,6 +18,18 @@ namespace macros
 	{
 		std::stringstream stream;
 		stream << value;
+		return stream.str();
+	}
+
+	inline std::string displayFloatWithSign(float value)
+	{
+		bool isNegative = value < 0.f;
+		std::stringstream stream;
+		if(isNegative)
+			stream << "-";
+		else
+			stream << "+";
+		stream << std::abs(value);
 		return stream.str();
 	}
 
@@ -48,5 +61,11 @@ namespace macros
 	bool contains(const Container& container, const Type& obj)
 	{
 		return find(container, obj) != container.end();
+	}
+
+	template<typename Type>
+	Type round(Type val, int nDecimals)
+	{
+		return std::round(val * nDecimals) / nDecimals;
 	}
 }
