@@ -1,4 +1,5 @@
 #include "camera2d.hpp"
+#include <algorithm>
 
 sf::FloatRect Camera2D::getViewport() const
 {
@@ -32,10 +33,11 @@ float Camera2D::getZoom() const
 
 void Camera2D::setZoom(float value)
 {
+	//REQUIRES_P(value >= 0.05 && myZoom <= 0.2);
 	myZoom = value;
 }
 
 void Camera2D::zoom(float delta)
 {
-	myZoom += delta;
+	myZoom = std::clamp(myZoom + delta, 0.05f, 0.2f);
 }

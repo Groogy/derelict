@@ -6,6 +6,8 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Shader.hpp>
 
+#include <iostream>
+
 Tilemap::Tilemap(const std::string& sourceFile)
 {
 	ENSURES_P(mySize.x > 0 && mySize.y > 0);
@@ -23,7 +25,6 @@ Tilemap::Tilemap(const std::string& sourceFile)
 
 void Tilemap::update()
 {
-	updateTexture();
 }
 
 const sf::Texture& Tilemap::getTexture() const
@@ -49,6 +50,49 @@ const Terrain* Tilemap::findTerrainFromColor(sf::Color color) const
 	return nullptr;
 }
 
+const Tile& Tilemap::findTileFromClick(const sf::Vector2i click, const Camera2D& camera) const
+{
+	auto cameraZoom = camera.getZoom();
+	sf::Vector2f tileSize(2 / cameraZoom, 2.3 / cameraZoom);
+	sf::Vector2f tilemapSize(mySize.x * tileSize.x, mySize.y * tileSize.y);
+	auto cameraPos = camera.getPosition();
+	cameraPos.x *= tilemapSize.x;
+	cameraPos.y *= tilemapSize.y;
+	sf::Vector2f tilemapClick = static_cast<sf::Vector2f>(click) + cameraPos;
+	while(tilemapClick.x < 0)
+		tilemapClick.x += tilemapSize.x;
+	while(tilemapClick.y < 0)
+		tilemapClick.y += tilemapSize.y;
+	while(tilemapClick.x > tilemapSize.x)
+		tilemapClick.x -= tilemapSize.x;
+	while(tilemapClick.y > tilemapSize.y)
+		tilemapClick.y -= tilemapSize.y;
+	for(auto& tile : myTiles)
+	{
+		auto tilePos = static_cast<sf::Vector2f>(tile.getPos());
+		tilePos.x *= tileSize.x;
+		tilePos.y *= tileSize.y;
+		sf::FloatRect rect(tilePos, tileSize);
+		if(rect.contains(tilemapClick))
+		{
+			return tile;
+		}
+	}
+	return *myTiles.begin();
+}
+
+void Tilemap::selectTile(sf::Vector2i pos)
+{
+	if(mySelectedTile.x >= 0 && mySelectedTile.y >= 0)
+	{
+		auto& prev = myTiles[mySelectedTile.x + mySelectedTile.y * mySize.x];
+		myColorCache.setPixel(mySelectedTile.x, mySelectedTile.y, prev.getTerrain()->getColor());
+	}
+	mySelectedTile = pos;
+	myColorCache.setPixel(pos.x, pos.y, sf::Color::Black);
+	myIsDirty = true;
+}
+
 void Tilemap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	REQUIRES_P(states.shader != nullptr);
@@ -63,13 +107,6 @@ void Tilemap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	buffer[2] = sf::Vertex(sf::Vector2f(0, targetSize.y), sf::Vector2f(textureStart.x, textureEnd.y));
 	buffer[3] = sf::Vertex(sf::Vector2f(targetSize.x, targetSize.y), textureEnd);
 	target.draw(buffer, states);
-
-	sf::VertexArray line(sf::Lines, 4);
-	line[0] = sf::Vertex(sf::Vector2f(targetSize.x / 2, offset));
-	line[1] = sf::Vertex(sf::Vector2f(targetSize.x / 2, targetSize.y));
-	line[2] = sf::Vertex(sf::Vector2f(0, (targetSize.y-offset) / 2 + offset));
-	line[3] = sf::Vertex(sf::Vector2f(targetSize.x, (targetSize.y-offset) / 2 + offset));
-	target.draw(line);
 }
 
 void Tilemap::setupTerrains()
@@ -85,15 +122,15 @@ void Tilemap::setupTiles(const sf::Image& source)
 {
 	auto wastelandTerrain = myTerrains[0].get();
 	myTiles.reserve(mySize.x * mySize.y);
-	for(unsigned int x = 0; x < mySize.x; x++)
+	for(unsigned int y = 0; y < mySize.y; y++)
 	{
-		for(unsigned int y = 0; y < mySize.y; y++)
+		for(unsigned int x = 0; x < mySize.x; x++)
 		{
 			auto terrain = findTerrainFromColor(source.getPixel(x, y));
 			if(!terrain)
 				terrain = wastelandTerrain;
 
-			myTiles.emplace_back(terrain);
+			myTiles.emplace_back(sf::Vector2i(x, y), terrain);
 			myColorCache.setPixel(x, y, terrain->getColor());
 		}
 	}

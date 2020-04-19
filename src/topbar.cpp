@@ -5,9 +5,11 @@
 #include "button.hpp"
 #include "macros.hpp"
 
+#include <SFML/Window/Event.hpp>
+
 #include <iostream>
 
-void Topbar::setup(Earth& earth)
+void Topbar::setup(Earth& earth, sf::Vector2i targetSize, const Camera2D& camera)
 {
 	auto& homeostasis = earth.getHomeostasis();
 	auto label = std::make_unique<Label>();
@@ -83,6 +85,28 @@ void Topbar::setup(Earth& earth)
 	myIcons.push_back(std::move(sprite));
 
 	myTextures.push_back(std::move(texture));
+
+	auto& tilemap = earth.accessTilemap();
+	myTilemapClickTest = [&tilemap, targetSize](const sf::Event& event) {
+		float offset = targetSize.y / 4;
+		sf::IntRect rect(0, offset, targetSize.x, targetSize.y-offset);
+		return rect.contains(event.mouseButton.x, event.mouseButton.y);
+	};
+
+	label = std::make_unique<Label>();
+	label->attachTextChangeHook([this](){
+		return myTileInfoStr;
+	});
+	label->move(325, 8);
+	myObjects.push_back(std::move(label));
+
+	myTilemapClickInspect = [&tilemap, targetSize, &camera, this](const sf::Event& event) {
+		float offset = targetSize.y / 4;
+		sf::Vector2i clickOnScreen(event.mouseButton.x, event.mouseButton.y - offset);
+		auto tile = tilemap.findTileFromClick(clickOnScreen, camera);
+		myTileInfoStr = tile.getInfoStr();
+		tilemap.selectTile(tile.getPos());
+	};
 }
 
 void Topbar::update()
@@ -99,6 +123,20 @@ void Topbar::processEvent(const sf::Event& event)
 	{
 		obj->processEvent(event);
 	}
+
+	switch(event.type)
+	{
+		case sf::Event::MouseButtonReleased:
+		{
+			if(myTilemapClickTest(event))
+			{
+				handleOnTilemapClick(event);
+			}
+			break;
+		}
+		default:
+			break;
+	}
 }
 
 void Topbar::render(Renderer& renderer) const
@@ -111,4 +149,9 @@ void Topbar::render(Renderer& renderer) const
 	{
 		renderer.draw(*icon);
 	}
+}
+
+void Topbar::handleOnTilemapClick(const sf::Event& event)
+{
+	myTilemapClickInspect(event);
 }

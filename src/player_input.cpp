@@ -35,9 +35,9 @@ float PlayerInput::getCameraZoomChange() const
 {
 	float change = 0;
 	if(myActions[In])
-		change += -0.5f;
+		change += -0.25f;
 	if(myActions[Out])
-		change += 0.5f;
+		change += 0.25f;
 	return change;
 }
 

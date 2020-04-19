@@ -20,7 +20,7 @@ GameState::GameState(sf::RenderWindow& window)
 	myTilemapShader.loadFromFile("default.vertex", "tilemap.fragment");
 	myEarthShader.setUniform("terrainSampler", myEarth.getTilemap().getTexture());
 
-	myTopbar.setup(myEarth);
+	myTopbar.setup(myEarth, static_cast<sf::Vector2i>(myWindow.getSize()), myCamera);
 }
 
 GameState::~GameState()
@@ -78,6 +78,7 @@ void GameState::handleTick()
 
 void GameState::handleRender()
 {
+	myEarth.accessTilemap().updateTexture();
 	myRenderer.clear();
 	myRenderer.draw(myEarth, &myEarthShader);
 
@@ -93,15 +94,5 @@ void GameState::handleUI()
 	myRenderer.draw(tilemap, &myTilemapShader);
 
 	myTopbar.render(myRenderer);
-
-	auto windowSize = myWindow.getSize();
-	sf::VertexArray line(sf::Lines, 4);
-	float width = windowSize.x / 8;
-	float height = windowSize.y / 8;
-	line[0] = sf::Vertex(sf::Vector2f(windowSize.x - width, 0));
-	line[1] = sf::Vertex(sf::Vector2f(windowSize.x - width, height*2));
-	line[2] = sf::Vertex(sf::Vector2f(windowSize.x - width*2, height));
-	line[3] = sf::Vertex(sf::Vector2f(windowSize.x, height));
-	myRenderer.draw(line);
 }
 

@@ -12,6 +12,11 @@
 #include <vector>
 #include <memory>
 
+namespace sf
+{
+	class Event;
+}
+
 class Camera2D;
 
 class Tilemap : public sf::Drawable
@@ -20,11 +25,15 @@ public:
 	Tilemap(const std::string& sourceFile);
 
 	void update();
+	void updateTexture();
 
 	const sf::Texture& getTexture() const;
 	void prepareShader(sf::Shader& shader, const Camera2D& camera) const;
 
 	const Terrain* findTerrainFromColor(sf::Color color) const;
+
+	const Tile& findTileFromClick(const sf::Vector2i click, const Camera2D& camera) const;
+	void selectTile(sf::Vector2i pos);
 
 private:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -32,11 +41,11 @@ private:
 	void setupTerrains();
 	void setupTiles(const sf::Image& source);
 
-	void updateTexture();
-
 	sf::Vector2u mySize;
 	std::vector<Tile> myTiles;
 	std::vector<std::unique_ptr<Terrain>> myTerrains;
+
+	sf::Vector2i mySelectedTile = sf::Vector2i(-1, -1);
 
 	sf::Image myColorCache;
 	sf::Texture myTexture;
