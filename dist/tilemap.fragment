@@ -4,8 +4,9 @@ uniform sampler2D terrainSampler;
 uniform vec2 cameraPosition;
 uniform float cameraZoom;
 uniform float time;
+uniform int showClouds;
 
-uniform vec4 colorPalette[10];
+uniform vec4 colorPalette[11];
 
 int perm[256] = int[256](
 	151, 160, 137, 91, 90, 15,
@@ -126,7 +127,7 @@ vec4 calculateColor(vec2 coord)
 		int det = int(coord.x * 10000 + coord.y * 10000);
 		color = det % 2 == 0 ? vec4(0, 0, 0, 1) : color;
 	}
-	if(data.b > 0)
+	if(data.b > 0 && showClouds > 0)
 	{
 		vec4 cloudColor = int(data.b * 256) >= 2 ? vec4(0.54, 0.0, 0.60, 1) : vec4(1, 1, 1, 1);
 		int det = int(coord.x * 10000 + coord.y * 10000);

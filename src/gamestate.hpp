@@ -5,18 +5,20 @@
 #include "player_input.hpp"
 #include "camera2d.hpp"
 #include "topbar.h"
+#include "state.hpp"
 
 #include <SFML/Graphics/Shader.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Clock.hpp>
 #include <SFML/Graphics/Text.hpp>
 #include <SFML/Graphics/Font.hpp>
+#include <SFML/Audio/Music.hpp>
 namespace sf
 {
 	class RenderWindow;
 }
 
-class GameState
+class GameState : public State
 {
 public:
 	GameState(sf::RenderWindow& window);
@@ -24,7 +26,7 @@ public:
 
 	bool isRunning() const;
 
-	void update();
+	virtual State* update() override;
 
 private:
 	void handleEvents(sf::Time delta);
@@ -54,4 +56,11 @@ private:
 	sf::Text myNotification;
 	sf::Font myFont;
 	sf::Time myNotificationTimer;
+
+	sf::SoundBuffer myHumanSpawnSoundBuffers[4];
+	sf::Sound myHumanSpawnSounds[4];
+
+	bool myHumansHaveSpawned = false;
+	State* myTempWinState = nullptr;
+	bool myHasDecidedToContinue = false;
 };

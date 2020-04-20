@@ -61,7 +61,7 @@ bool Earth::canBuildOn(sf::Vector2i pos, const Building& building) const
 		return false;
 
 	auto tile = myTilemap.getTile(pos);
-	if(tile.getBuilding())
+	if(tile.getBuilding() && !building.ignoresPreviousBuilding())
 		return false;
 
 	if(!tile.getTerrain()->canBuild(building.getName()))

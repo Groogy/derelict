@@ -38,5 +38,5 @@ void Camera2D::setZoom(float value)
 
 void Camera2D::zoom(float delta)
 {
-	myZoom = std::clamp(myZoom + delta, 0.05f, 0.2f);
+	myZoom = std::clamp(myZoom + delta, 0.05f, 0.4f);
 }

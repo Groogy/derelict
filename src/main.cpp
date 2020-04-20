@@ -1,6 +1,7 @@
-#include "gamestate.hpp"
+#include "intro_state.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Audio/Music.hpp>
 
 #include <cstdlib>
 
@@ -14,11 +15,23 @@ int main()
 	settings.majorVersion = 3;
 	settings.minorVersion = 0;
 
-	sf::RenderWindow window(sf::VideoMode(1280, 800), "Ludum Dare 46", sf::Style::Default, settings);
-	GameState game(window);
-	while(game.isRunning())
+	sf::RenderWindow window(sf::VideoMode(1280, 800), "Derelict: Gaia Protocol", sf::Style::Default, settings);
+
+	sf::Music music;
+	music.openFromFile("music.wav");
+	music.setVolume(5.0);
+	music.setLoop(true);
+	music.play();
+
+	State* currentState = new IntroState(window);
+	while(currentState)
 	{
-		game.update();
+		auto newState = currentState->update();
+		if(newState != currentState)
+		{
+			delete currentState;
+			currentState = newState;
+		}
 		window.display();
 	}
 	return 0;

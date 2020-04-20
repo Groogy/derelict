@@ -11,7 +11,7 @@ class Building
 public:
 	using UpdateEffect = std::function<void(Earth&, const Tile& tile)>;
 
-	Building(const std::string& name, const std::string& button, float energyCost, float homeostasisChange, float energyChange, bool hidden, UpdateEffect update = nullptr);
+	Building(const std::string& name, const std::string& button, float energyCost, float homeostasisChange, float energyChange, bool hidden, bool ignoresPreviousBuilding, UpdateEffect update = nullptr);
 
 	const std::string& getName() const;
 	const std::string& getButton() const;
@@ -19,6 +19,7 @@ public:
 	float getHomeostasisChange() const;
 	float getEnergyChange() const;
 	bool isHidden() const;
+	bool ignoresPreviousBuilding() const;
 
 	std::string getStatsStr() const;
 
@@ -31,6 +32,7 @@ private:
 	float myHomeostasisChange;
 	float myEnergyChange;
 	bool myHidden;
+	bool myIgnoresPreviousBuilding;
 
 	UpdateEffect myUpdateEffect;
 };

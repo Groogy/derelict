@@ -5,7 +5,7 @@
 #include "tilemap.hpp"
 #include "settler.hpp"
 
-constexpr int TicksPerSettlement = 20;
+constexpr int TicksPerSettlement = 40;
 
 Human::Human(sf::Vector2i settlement)
 {

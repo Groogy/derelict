@@ -1,13 +1,14 @@
 #include "building.hpp"
 #include "macros.hpp"
 
-Building::Building(const std::string& name, const std::string& button, float energyCost, float homeostasisChange, float energyChange, bool hidden, UpdateEffect update)
+Building::Building(const std::string& name, const std::string& button, float energyCost, float homeostasisChange, float energyChange, bool hidden, bool ignoresPreviousBuilding, UpdateEffect update)
 : myName(name)
 , myButton(button)
 , myEnergyCost(energyCost)
 , myHomeostasisChange(homeostasisChange)
 , myEnergyChange(energyChange)
 , myHidden(hidden)
+, myIgnoresPreviousBuilding(ignoresPreviousBuilding)
 , myUpdateEffect(update)
 {
 
@@ -41,6 +42,12 @@ float Building::getEnergyChange() const
 bool Building::isHidden() const
 {
 	return myHidden;
+}
+
+
+bool Building::ignoresPreviousBuilding() const
+{
+	return myIgnoresPreviousBuilding;
 }
 
 std::string Building::getStatsStr() const

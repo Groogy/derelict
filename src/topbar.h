@@ -5,6 +5,9 @@
 
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Texture.hpp>
+#include <SFML/Audio/Sound.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
+#include <SFML/System/Time.hpp>
 
 #include <vector>
 #include <memory>
@@ -16,12 +19,15 @@ class Camera2D;
 class Topbar
 {
 public:
+	void setupSound();
 	void setupBuildings();
 	void setupGui(Earth& earth, sf::Vector2i targetSize, const Camera2D& camera);
 
 	void update();
 	void processEvent(const sf::Event& event);
 	void render(Renderer& renderer) const;
+
+	sf::Time getTimeStep() const;
 
 	const std::vector<std::unique_ptr<Building>>& getBuildings() const;
 
@@ -44,4 +50,24 @@ private:
 	std::string myBuildingStatsStr;
 
 	std::vector<std::unique_ptr<Building>> myBuildingsDatabase;
+
+	sf::SoundBuffer myFailureSoundBuffer;
+	sf::SoundBuffer mySuccessSoundBuffer;
+	sf::Sound myFailureSound;
+	sf::Sound mySuccessSound;
+
+	sf::SoundBuffer myNukeRadiationSoundBuffer;
+	sf::SoundBuffer myNukeExplosionSoundBuffer;
+	sf::Sound myNukeRadiationSound;
+	sf::Sound myNukeExplosionSound;
+
+	sf::SoundBuffer myEarthquakeSoundBuffer;
+	sf::Sound myEarthquakeSound;
+
+	enum Timestep 
+	{
+		Normal,
+		Fast,
+		Faster
+	} myTimestep;
 };

@@ -14,10 +14,11 @@ struct RenderStackState
 {
 public:
 	RenderStackState(Renderer& renderer);
+	RenderStackState(sf::RenderTarget& target);
 	~RenderStackState();
 
 private:
-	Renderer& myRenderer;
+	sf::RenderTarget& myTarget;
 };
 
 class Renderer

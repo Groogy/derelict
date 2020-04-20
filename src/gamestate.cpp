@@ -1,4 +1,5 @@
 #include "gamestate.hpp"
+#include "gameover_state.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Window/Event.hpp>
@@ -23,6 +24,7 @@ GameState::GameState(sf::RenderWindow& window)
 	myTilemapShader.loadFromFile("default.vertex", "tilemap.fragment");
 	myEarthShader.setUniform("terrainSampler", myEarth.getTilemap().getTexture());
 
+	myTopbar.setupSound();
 	myTopbar.setupBuildings();
 	myTopbar.setupGui(myEarth, static_cast<sf::Vector2i>(myWindow.getSize()), myCamera);
 
@@ -32,6 +34,13 @@ GameState::GameState(sf::RenderWindow& window)
 	myNotification.setFillColor(sf::Color::Red);
 	myNotification.setOutlineThickness(1);
 	myNotification.setCharacterSize(36);
+
+	for(int i = 0; i < 4; i++)
+	{
+		myHumanSpawnSoundBuffers[i].loadFromFile("human_spawn" + std::to_string(i+1) + ".wav");
+		myHumanSpawnSounds[i].setBuffer(myHumanSpawnSoundBuffers[i]);
+		myHumanSpawnSounds[i].setVolume(i == 3 ? 10.0 : 40.0);
+	}
 }
 
 GameState::~GameState()
@@ -43,7 +52,7 @@ bool GameState::isRunning() const
 	return myWindow.isOpen();
 }
 
-void GameState::update()
+State* GameState::update()
 {
 	sf::Time delta = myClock.restart();
 	myTimeSinceStart += delta;
@@ -51,14 +60,55 @@ void GameState::update()
 	if(myNotificationTimer > sf::Time::Zero)
 		myNotificationTimer -= delta;
 
+	if(myTempWinState)
+	{
+		auto state = myTempWinState->update();
+		if(state == this)
+		{
+			delete myTempWinState;
+			myTempWinState = nullptr;
+			myHasDecidedToContinue = true;
+		}
+		else if(state == myTempWinState)
+		{
+			return this;
+		}
+		else
+		{
+			return state;
+		}
+	}
+
 	handleEvents(delta);
-	if(myTimeSinceLastTick > sf::seconds(1.0))
+	if(myTimeSinceLastTick > myTopbar.getTimeStep())
 	{
 		myTimeSinceLastTick = sf::Time::Zero;
 		handleTick();
 	}
 	handleRender(delta);
-	handleUI();
+	if(!sf::Keyboard::isKeyPressed(sf::Keyboard::G))
+		handleUI();
+
+	if(isRunning())
+	{
+		if(!myHasDecidedToContinue)
+		{
+			if(myEarth.getHomeostasis().getValue() <= 0)
+			return new GameOverState(myWindow, GameOverState::LossHomeostasis);
+			else if(myEarth.getEnergy().getValue() <= 0)
+				return new GameOverState(myWindow, GameOverState::LossEnergy);
+			else if(myEarth.getHomeostasis().getValue() >= 100)
+			{
+				myTempWinState = new GameOverState(myWindow, myEarth.hasHumans() ? GameOverState::VictoryHumans : GameOverState::VictoryNoHumans, this);
+			}
+		}
+
+		return this;
+	}
+	else
+	{
+		return nullptr;
+	}
 }
 
 void GameState::handleEvents(sf::Time delta)
@@ -126,11 +176,19 @@ void GameState::handleRender(sf::Time delta)
 
 	auto& camera3d = myRenderer.accessCamera();
 
-	auto targetSize = myWindow.getSize();
-	sf::Vector2i viewportSize = static_cast<sf::Vector2i>(targetSize) / 4;
+	int nDivider = 4;
+	if(sf::Keyboard::isKeyPressed(sf::Keyboard::G))
+	{
+		nDivider = 2;
+	}
+
+	auto timeStep = myTopbar.getTimeStep().asSeconds();
+	timeStep *= timeStep;
+	auto targetSize = myWindow.getSize(); 
+	sf::Vector2i viewportSize = static_cast<sf::Vector2i>(targetSize) / nDivider;
 	sf::Vector2i viewportPosition = static_cast<sf::Vector2i>(targetSize) - viewportSize;
 	camera3d.setViewport(viewportPosition, viewportSize);	
-	float xRotation = camera3d.getRotation().x + 4.0 * delta.asSeconds();
+	float xRotation = camera3d.getRotation().x + 4.0/timeStep * delta.asSeconds();
 	myRenderer.accessCamera().setRotation(sf::Vector2f(xRotation, -45.f));
 	myRenderer.draw(myEarth, &myEarthShader);
 
@@ -169,25 +227,44 @@ void GameState::handleHumanAppearance()
 
 	auto& tilemap = myEarth.accessTilemap();
 	std::vector<sf::Vector2i> potentials;
+	std::vector<sf::Vector2i> preferredPotentials;
 	for(auto tile : tilemap.getTiles())
 	{
 		if(tile.getTerrain()->getName() == "Ruins")
 		{
+			potentials.push_back(tile.getPos());
 			int nCount = tilemap.countConvertable(tile.getPos(), "Settlement", 16);
 			if(nCount <= 10)
 				continue;
 				
 			int weight = nCount;
 			for(int i = 0; i < weight; i++)
-				potentials.push_back(tile.getPos());
+				preferredPotentials.push_back(tile.getPos());
 		}
 	}
-	if(potentials.empty())
+	if(!preferredPotentials.empty())
+	{
+		int random = rand() % preferredPotentials.size();
+		auto pos = preferredPotentials[random];
+		myEarth.spawnHuman(pos, polluter);
+	}
+	else if(!potentials.empty())
+	{
+		int random = rand() % potentials.size();
+		auto pos = potentials[random];
+		myEarth.spawnHuman(pos, polluter);
+	}
+	else
+	{
 		return;
+	}
 
-	int random = rand() % potentials.size();
-	auto pos = potentials[random];
-	myEarth.spawnHuman(pos, polluter);
+	if(myHumansHaveSpawned == false)
+	{
+		for(int i = 0; i < 4; i++)
+			myHumanSpawnSounds[i].play();
+		myHumansHaveSpawned = true;
+	}
 
 	myNotification.setString("HUMANS HAVE FOUNDED A SETTLEMENT!");
 	myNotificationTimer = sf::seconds(5.f);

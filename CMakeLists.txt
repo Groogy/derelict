@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(ludumdare46 
+project(derelict 
 		VERSION 0.1.0
 		LANGUAGES CXX)
 
@@ -48,6 +48,9 @@ set(SOURCES
 	human.cpp
 	settler.cpp
 	path.cpp
+	state.cpp
+	intro_state.cpp
+	gameover_state.cpp
 )
 
 foreach(FILE ${SOURCES})

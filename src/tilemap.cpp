@@ -11,7 +11,7 @@
 
 #include <deque>
 
-constexpr int NumPaletteColors = 10;
+constexpr int NumPaletteColors = 11;
 std::vector<sf::Color> TerrainPalette = {
 	sf::Color(0, 0, 0, 0), // Selected
 	sf::Color(255, 69, 0), // Wasteland
@@ -23,6 +23,7 @@ std::vector<sf::Color> TerrainPalette = {
 	sf::Color(70, 33, 4), // Barren
 	sf::Color(0, 110, 9), // Restored
 	sf::Color(255, 255, 0), // Settlement
+	sf::Color(0, 255, 0), // Biosphere
 };
 
 Tilemap::Tilemap(const std::string& sourceFile)
@@ -104,6 +105,7 @@ void Tilemap::prepareShader(sf::Shader& shader, const Camera2D& camera, sf::Time
 	shader.setUniform("cameraPosition", camera.getPosition());
 	shader.setUniform("cameraZoom", camera.getZoom());
 	shader.setUniform("time", timeSinceStart.asSeconds() / 10);
+	shader.setUniform("showClouds", myShowClouds);
 
 	sf::Glsl::Vec4 tmp[NumPaletteColors];
 	for(int index = 0; index < NumPaletteColors; index++)
@@ -451,6 +453,11 @@ bool Tilemap::isInside(sf::Vector2i pos) const
 	return pos.x >= 0 && pos.y >= 0 && pos.x < static_cast<int>(mySize.x) && pos.y < static_cast<int>(mySize.y);
 }
 
+void Tilemap::toggleClouds()
+{
+	myShowClouds = !myShowClouds;
+}
+
 void Tilemap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 {
 	REQUIRES_P(states.shader != nullptr);
@@ -469,32 +476,35 @@ void Tilemap::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
 void Tilemap::setupTerrains()
 {
-	myTerrains.emplace_back(new Terrain("Wasteland", 1, true, false, 
-		{"Power Plant", "Atmo Plant", "Scrubber", "Nuke", "Comet"}, {"Barren"}
+	myTerrains.emplace_back(new Terrain("Wasteland", 1, true, false, 0.0,
+		{"Power Plant", "Atmo Plant", "Scrubber", "Nuke", "Comet", "Terraformer"}, {"Barren"}
 	));
-	myTerrains.emplace_back(new Terrain("Ruins", 2, true, false,
+	myTerrains.emplace_back(new Terrain("Ruins", 2, true, false, 0.0,
 		{"Power Plant", "Atmo Plant", "Nuke", "Comet"}, { "Settlement" }
 	));
-	myTerrains.emplace_back(new Terrain("Glass", 3, true, false,
-		{"Power Plant", "Atmo Plant", "Nuke", "Comet"}, {}
+	myTerrains.emplace_back(new Terrain("Glass", 3, true, false, 0.001,
+		{"Power Plant", "Atmo Plant", "Nuke", "Comet", "Terraformer"}, {}
 	));
-	myTerrains.emplace_back(new Terrain("Mountains", 4, false, true,
-		{"Nuke", "Comet"}, {}
+	myTerrains.emplace_back(new Terrain("Mountains", 4, false, true, 0.0,
+		{"Nuke", "Comet", "Terraformer"}, {}
 	));
-	myTerrains.emplace_back(new Terrain("Ocean Bed", 5, true, true,
-		{"Power Plant", "Atmo Plant", "Nuke", "Comet"}, {"Water"}
+	myTerrains.emplace_back(new Terrain("Ocean Bed", 5, true, true, 0.0,
+		{"Power Plant", "Atmo Plant", "Nuke", "Comet", "Terraformer"}, {"Water"}
 	));
-	myTerrains.emplace_back(new Terrain("Water", 6, true, true,
-		{"Water Plant", "Nuke", "Comet"}, {"Ocean Bed"}
+	myTerrains.emplace_back(new Terrain("Water", 6, true, true, 0.0,
+		{"Water Plant", "Nuke", "Comet", "Terraformer"}, {"Ocean Bed"}
 	));
-	myTerrains.emplace_back(new Terrain("Barren", 7, true, false,
-		{"Power Plant", "Atmo Plant", "Scrubber", "Nuke", "Comet"}, {"Restored", "Wasteland"}
+	myTerrains.emplace_back(new Terrain("Barren", 7, true, false, 0.0,
+		{"Power Plant", "Atmo Plant", "Scrubber", "Nuke", "Comet", "Terraformer"}, {"Restored", "Wasteland"}
 	));
-	myTerrains.emplace_back(new Terrain("Restored", 8, true, false,
-		{"Power Plant", "Atmo Plant", "Scrubber", "Nuke", "Comet"}, {"Settlement", "Wasteland"}
+	myTerrains.emplace_back(new Terrain("Restored", 8, true, false, 0.0,
+		{"Power Plant", "Atmo Plant", "Scrubber", "Nuke", "Comet", "Biomass Gen", "Fusion Plant", "Terraformer"}, {"Settlement", "Wasteland", "Biosphere"}
 	));
-	myTerrains.emplace_back(new Terrain("Settlement", 9, true, false,
+	myTerrains.emplace_back(new Terrain("Settlement", 9, true, false, 0.0,
 		{"Polluter", "Nuke", "Comet"}, {}
+	));
+	myTerrains.emplace_back(new Terrain("Biosphere", 10, true, false, 0.001,
+		{"Power Plant", "Atmo Plant", "Scrubber", "Nuke", "Comet", "Biomass Gen", "Fusion Plant", "Terraformer"}, {"Settlement", "Wasteland"}
 	));
 }
 

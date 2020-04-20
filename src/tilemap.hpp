@@ -60,6 +60,8 @@ public:
 
 	bool isInside(sf::Vector2i pos) const;
 
+	void toggleClouds();
+
 private:
 	virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const override;
 
@@ -76,4 +78,6 @@ private:
 	sf::Image myColorCache;
 	sf::Texture myTexture;
 	bool myIsDirty = false;
+
+	bool myShowClouds = true;
 };

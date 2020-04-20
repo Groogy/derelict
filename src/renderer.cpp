@@ -27,13 +27,20 @@ namespace
 }
 
 RenderStackState::RenderStackState(Renderer& renderer)
-: myRenderer(renderer)
+: myTarget(renderer.myTarget)
 {
-	myRenderer.myTarget.pushGLStates();
+	myTarget.pushGLStates();
 }
+
+RenderStackState::RenderStackState(sf::RenderTarget& target)
+: myTarget(target)
+{
+	myTarget.pushGLStates();
+}
+
 RenderStackState::~RenderStackState()
 {
-	myRenderer.myTarget.popGLStates();
+	myTarget.popGLStates();
 }
 
 Renderer::Renderer(sf::RenderTarget& target)

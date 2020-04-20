@@ -3,11 +3,12 @@
 
 extern std::vector<sf::Color>  TerrainPalette;
 
-Terrain::Terrain(const std::string& name, int colorId, bool canHaveCloud, bool impassable, const std::vector<std::string>& allowedBuildings, const std::vector<std::string>& allowedConversions)
+Terrain::Terrain(const std::string& name, int colorId, bool canHaveCloud, bool impassable, float homeostasisChange, const std::vector<std::string>& allowedBuildings, const std::vector<std::string>& allowedConversions)
 : myName(name)
 , myColorId(colorId)
 , myCanHaveCloud(canHaveCloud)
 , myImpassable(impassable)
+, myHomeostasisChange(homeostasisChange)
 , myAllowedBuildings(allowedBuildings)
 , myAllowedConversion(allowedConversions)
 {
@@ -37,6 +38,11 @@ bool Terrain::canHaveCloud() const
 bool Terrain::isImpassable() const
 {
 	return myImpassable;
+}
+
+float Terrain::getHomeostasisChange() const
+{
+	return myHomeostasisChange;
 }
 
 bool Terrain::canBuild(const std::string& building) const

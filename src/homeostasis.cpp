@@ -18,6 +18,7 @@ float Homeostasis::calculateChange(const Earth& earth) const
 		{
 			change += building->getHomeostasisChange();
 		}
+		change += tile.getTerrain()->getHomeostasisChange();
 	}
 	return change;
 }
