@@ -2,8 +2,11 @@
 
 #include <SFML/Graphics/RenderWindow.hpp>
 
+#include <cstdlib>
+
 int main()
 {
+	std::srand(std::time(nullptr));
 	sf::ContextSettings settings;
 	settings.depthBits = 24;
 	settings.stencilBits = 8;

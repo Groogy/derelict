@@ -1,12 +1,29 @@
 #version 130
 
 uniform sampler2D terrainSampler;
-uniform vec4 colorPalette[6];
+uniform vec4 colorPalette[10];
 
 vec4 calculateColor(vec2 coord)
 {
 	vec4 data = texture2D(terrainSampler, coord);
-	return colorPalette[int(data.r*256)];
+	vec4 color = colorPalette[int(data.r*256)];
+	if(data.g > 0)
+	{
+		int det = int(coord.x * 10000 + coord.y * 10000);
+		color = det % 2 == 0 ? vec4(0, 0, 0, 1) : color;
+	}
+	if(data.b > 0)
+	{
+		vec4 cloudColor = int(data.b * 256) >= 2 ? vec4(0.54, 0.0, 0.60, 1) : vec4(1, 1, 1, 1);
+		int det = int(coord.x * 10000 + coord.y * 10000);
+		color = det % 3 == 0 ? cloudColor : color;
+	}
+	if(data.a > 0)
+	{
+		int det = int(coord.x * 20000 + coord.y * 20000);
+		color = det % 3 == 0 ? vec4(1, 1, 0, 1) : color;
+	}
+	return color;
 }
 
 void main()

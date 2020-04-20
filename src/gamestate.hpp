@@ -9,7 +9,8 @@
 #include <SFML/Graphics/Shader.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/System/Clock.hpp>
-
+#include <SFML/Graphics/Text.hpp>
+#include <SFML/Graphics/Font.hpp>
 namespace sf
 {
 	class RenderWindow;
@@ -28,8 +29,12 @@ public:
 private:
 	void handleEvents(sf::Time delta);
 	void handleTick();
-	void handleRender();
+	void handleRender(sf::Time delta);
 	void handleUI();
+
+
+	void handleHumanAppearance();
+	void handleCometSighted();
 
 	sf::RenderWindow& myWindow;
 	sf::Clock myClock;
@@ -45,4 +50,8 @@ private:
 	sf::Shader myTilemapShader;
 
 	Topbar myTopbar;
+
+	sf::Text myNotification;
+	sf::Font myFont;
+	sf::Time myNotificationTimer;
 };

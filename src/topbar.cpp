@@ -12,11 +12,94 @@
 void Topbar::setupBuildings()
 {
 	// Power Plant
-	auto building = std::make_unique<Building>("Power Plant", "powerplant.png", 5, -0.1, 0.05);
+	auto building = std::make_unique<Building>("Power Plant", "powerplant.png", 5, -0.01, 0.2, false);
 	myBuildingsDatabase.push_back(std::move(building));
 
 	// Atmospheric Plant
-	building = std::make_unique<Building>("Atmo Plant", "atmoplant.png", 10, 0.05, -0.025);
+	building = std::make_unique<Building>("Atmo Plant", "atmoplant.png", 10, 0.005, -0.1, false, [](Earth& earth, const Tile& tile){
+		if(!earth.getTilemap().canHaveCloud(tile.getPos()))
+			return;
+
+		int chance = rand() % 50;
+		if(chance == 0)
+		{
+			int volume = 8 + rand() % 100;
+			earth.spawnCloud(tile.getPos(), volume, false);
+		}
+	});
+	myBuildingsDatabase.push_back(std::move(building));
+
+	// Water Plant
+	building = std::make_unique<Building>("Water Plant", "waterplant.png", 15, -0.03, 0.8, false);
+	myBuildingsDatabase.push_back(std::move(building));
+
+	// Scrubber
+	building = std::make_unique<Building>("Scrubber", "waterplant.png", 50, 0.05, -0.8, false, [](Earth& earth, const Tile& tile){
+		int chance = rand() % 5;
+		if(chance == 0)
+		{
+			auto& tilemap = earth.accessTilemap();
+			auto& toConvert = tilemap.findFirstConvertable(tile.getPos(), "Barren");
+			tilemap.setTileTerrain(toConvert.getPos(), "Barren");
+		}
+	});
+	myBuildingsDatabase.push_back(std::move(building));
+
+	//Nuke
+	building = std::make_unique<Building>("Nuke", "waterplant.png", 100, 0, 0, false, [](Earth& earth, const Tile& tile){
+		auto& tilemap = earth.accessTilemap();
+		auto pos = tile.getPos();
+		tilemap.applyFunctionInSphere(pos, 4, [&tilemap, pos](const Tile& tile)
+		{
+			auto terrainName = tile.getTerrain()->getName();
+			if(terrainName == "Water")
+			{
+				tilemap.setTileTerrain(tile.getPos(), "Ocean Bed");
+				return;
+			}
+			if(terrainName == "Ocean Bed" || terrainName == "Glass" || terrainName == "Mountains")
+			{
+				return;
+			}
+			
+			auto current = tile.getPos();
+			int manhattan = std::abs(current.x - pos.x) + std::abs(current.y - pos.y);
+			tilemap.setTileTerrain(current, manhattan <= 1 ? "Glass" : "Wasteland");
+			tilemap.setBuilding(current, nullptr);
+			
+		});
+	});
+	myBuildingsDatabase.push_back(std::move(building));
+
+	// Polluter
+	building = std::make_unique<Building>("Polluter", "waterplant.png", 0, -0.025, 0.0, true, [](Earth& earth, const Tile& tile){
+		if(!earth.getTilemap().canHaveCloud(tile.getPos()))
+			return;
+
+		int chance = rand() % 500;
+		if(chance == 0)
+		{
+			int volume = 8 + rand() % 50;
+			earth.spawnCloud(tile.getPos(), volume, true);
+		}
+	});
+	myBuildingsDatabase.push_back(std::move(building));
+
+	// Comet - Easteregg
+	building = std::make_unique<Building>("Comet", "waterplant.png", 0, 0, 0, true, [](Earth& earth, const Tile& tile){
+		auto& tilemap = earth.accessTilemap();
+		auto pos = tile.getPos();
+		tilemap.applyFunctionInSphere(pos, 7, [&tilemap, pos](const Tile& tile)
+		{
+			auto current = tile.getPos();
+			int manhattan = std::abs(current.x - pos.x) + std::abs(current.y - pos.y);
+			if(manhattan >= 5 )
+				tilemap.setTileTerrain(current, "Mountains");
+			else
+				tilemap.setTileTerrain(current, manhattan <= 1 ? "Glass" : "Wasteland");
+			tilemap.setBuilding(current, nullptr);
+		});
+	});
 	myBuildingsDatabase.push_back(std::move(building));
 }
 
@@ -185,6 +268,11 @@ void Topbar::render(Renderer& renderer) const
 	}
 }
 
+const std::vector<std::unique_ptr<Building>>& Topbar::getBuildings() const
+{
+	return myBuildingsDatabase;
+}
+
 void Topbar::handleOnTilemapClick(const sf::Event& event)
 {
 	if(myTilemapClickAction)
@@ -200,15 +288,17 @@ void Topbar::handleOnTilemapClick(const sf::Event& event)
 
 void Topbar::generateBuildingButtons(Earth& earth, sf::Vector2i targetSize, const Camera2D& camera)
 {
-	sf::Vector2f pos(5, 70);
+	sf::Vector2f pos(5, 64);
 	for(auto& building : myBuildingsDatabase)
 	{
+		if(building->isHidden())
+			continue;
 		generateBuildingButtonFor(*building, earth, targetSize, camera, pos);
 		pos.x += 70;
-		if ( pos.x > 430)
+		if ( pos.x > 230)
 		{
-			pos.x = 0;
-			pos.y += 70;
+			pos.x = 5;
+			pos.y += 64;
 		}
 	}
 }

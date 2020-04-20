@@ -44,6 +44,10 @@ set(SOURCES
 	energy.cpp
 	button.cpp
 	building.cpp
+	cloud.cpp
+	human.cpp
+	settler.cpp
+	path.cpp
 )
 
 foreach(FILE ${SOURCES})

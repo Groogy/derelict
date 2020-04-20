@@ -63,8 +63,28 @@ bool Earth::canBuildOn(sf::Vector2i pos, const Building& building) const
 	auto tile = myTilemap.getTile(pos);
 	if(tile.getBuilding())
 		return false;
-		
+
+	if(!tile.getTerrain()->canBuild(building.getName()))
+		return false;
+
 	return true;
+}
+
+void Earth::spawnCloud(sf::Vector2i pos, int volume, bool pollution)
+{
+	myTilemap.createCloud(pos, volume, pollution);
+}
+
+void Earth::spawnHuman(sf::Vector2i pos, const Building* building)
+{
+	myTilemap.setTileTerrain(pos, "Settlement");
+	myTilemap.setBuilding(pos, building);
+	myHumans.emplace_back(std::make_unique<Human>(pos));
+}
+
+bool Earth::hasHumans() const
+{
+	return !myHumans.empty();
 }
 
 void Earth::buildOn(sf::Vector2i pos, const Building& building)
@@ -75,19 +95,46 @@ void Earth::buildOn(sf::Vector2i pos, const Building& building)
 
 void Earth::update()
 {
+	myTilemap.update(*this);
 	myHomeostasis.update(*this);
 	myEnergy.update(*this);
+
+	updateHumans();
+}
+
+void Earth::updateHumans()
+{
+	std::vector<Human*> destroyedHumans;
+	for(auto& human : myHumans)
+	{
+		if(human->isDestroyed())
+		{
+			destroyedHumans.push_back(human.get());
+		}
+		else
+		{
+			human->update(*this);
+		}
+	}
+	for(auto destroyed : destroyedHumans)
+	{
+		for(auto& human : myHumans)
+		{
+			if(human.get() == destroyed)
+			{
+				myHumans.erase(macros::find(myHumans, human));
+			}
+		}
+	}
 }
 
 void Earth::generateSphere(float radius)
 {
 	constexpr float Pi = 3.141592654f;
-	constexpr int SectorCount = 256;
-	constexpr int StackCount = 256;
+	constexpr int SectorCount = 192;
+	constexpr int StackCount = 192;
 	constexpr float SectorStep = 2 * Pi / SectorCount;
 	constexpr float StackStep = Pi / StackCount;
-
-	const float radiusInv = 1.0 / radius;
 
 	std::vector<Vertex> tmpVertices;
 	
@@ -103,8 +150,7 @@ void Earth::generateSphere(float radius)
 			float y = xy * std::sin(sectorAngle);
 			tmpVertices.emplace_back(
 				sf::Vector3f(x, y, z), 
-				sf::Vector2f(static_cast<float>(sector + 1) / SectorCount, static_cast<float>(stack + 1) / StackCount), 
-				sf::Vector3f(x * radiusInv, y * radiusInv, z * radiusInv)
+				sf::Vector2f(static_cast<float>(sector + 1) / SectorCount, static_cast<float>(stack + 1) / StackCount)
 			);
 		}
 	}

@@ -7,6 +7,7 @@
 
 class Terrain;
 class Building;
+class Tilemap;
 
 class Tile
 {
@@ -14,12 +15,14 @@ public:
 	Tile(sf::Vector2i pos, const Terrain* terrain);
 
 	sf::Vector2i getPos() const;
+
 	const Terrain* getTerrain() const;
+	void setTerrain(const Terrain* terrain);
 
 	void setBuilding(const Building* building);
 	const Building* getBuilding() const;
 
-	sf::Color calculateColor() const;
+	sf::Color calculateColor(const Tilemap& tilemap) const;
 
 	std::string getInfoStr() const;
 private:

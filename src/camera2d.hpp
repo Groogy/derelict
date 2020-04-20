@@ -23,6 +23,6 @@ public:
 private:
 	sf::FloatRect myViewport;
 	sf::Vector2f myPosition;
-	float myZoom = 0.1;
+	float myZoom = 0.2;
 
 };

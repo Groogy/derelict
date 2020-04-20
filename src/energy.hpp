@@ -12,5 +12,5 @@ public:
 	void add(float value);
 
 private:
-	float myValue = 10;
+	float myValue = 20;
 };

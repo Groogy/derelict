@@ -5,7 +5,7 @@ uniform vec2 cameraPosition;
 uniform float cameraZoom;
 uniform float time;
 
-uniform vec4 colorPalette[6];
+uniform vec4 colorPalette[10];
 
 int perm[256] = int[256](
 	151, 160, 137, 91, 90, 15,
@@ -125,6 +125,17 @@ vec4 calculateColor(vec2 coord)
 	{
 		int det = int(coord.x * 10000 + coord.y * 10000);
 		color = det % 2 == 0 ? vec4(0, 0, 0, 1) : color;
+	}
+	if(data.b > 0)
+	{
+		vec4 cloudColor = int(data.b * 256) >= 2 ? vec4(0.54, 0.0, 0.60, 1) : vec4(1, 1, 1, 1);
+		int det = int(coord.x * 10000 + coord.y * 10000);
+		color = det % 3 == 0 ? cloudColor : color;
+	}
+	if(data.a > 0)
+	{
+		int det = int(coord.x * 20000 + coord.y * 20000);
+		color = det % 3 == 0 ? vec4(1, 1, 0, 1) : color;
 	}
 	return color;
 }

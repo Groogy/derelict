@@ -28,8 +28,6 @@ public:
 	const Camera3D& getCamera() const;
 	Camera3D& accessCamera();
 
-	void notifyResize(sf::Vector2u size);
-
 	void clear();
 	void draw(const std::vector<Vertex>& vertices, sf::PrimitiveType primitive, Transform transform = Transform::Identity, sf::Shader* shader = nullptr);
 	void draw(const std::vector<Vertex>& vertices, const std::vector<IndexType>& indices, sf::PrimitiveType primitive, Transform transform = Transform::Identity, sf::Shader* shader = nullptr);

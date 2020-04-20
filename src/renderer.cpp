@@ -39,8 +39,6 @@ RenderStackState::~RenderStackState()
 Renderer::Renderer(sf::RenderTarget& target)
 : myTarget(target)
 {
-	notifyResize(target.getSize());
-
 	glEnable(GL_DEPTH_TEST);
 	glDepthFunc(GL_LESS);
 	//glEnable(GL_CULL_FACE);
@@ -55,15 +53,6 @@ const Camera3D& Renderer::getCamera() const
 Camera3D& Renderer::accessCamera()
 {
 	return myCamera;
-}
-
-void Renderer::notifyResize(sf::Vector2u size)
-{
-	setActive();
-
-	sf::Vector2i viewportSize = static_cast<sf::Vector2i>(size) / 4;
-	sf::Vector2i viewportPosition = static_cast<sf::Vector2i>(size) - viewportSize;
-	myCamera.setViewport(viewportPosition, viewportSize);
 }
 
 void Renderer::clear()
@@ -94,9 +83,8 @@ void Renderer::draw(const std::vector<Vertex>& vertices, const std::vector<Index
 	for(auto index : indices)
 	{
 		const auto& vertex = vertices[index];
-		glVertex3f(vertex.position.x, vertex.position.y, vertex.position.z);
-		glTexCoord2f(vertex.texcoord.x, vertex.texcoord.y);
-		//glNormal3f(vertex.normal.x, vertex.normal.y, vertex.normal.z);
+		glVertex3fv(&vertex.position.x);
+		glTexCoord2fv(&vertex.texcoord.x);
 	}
 	glEnd();
 	glPopMatrix();

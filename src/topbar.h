@@ -23,6 +23,8 @@ public:
 	void processEvent(const sf::Event& event);
 	void render(Renderer& renderer) const;
 
+	const std::vector<std::unique_ptr<Building>>& getBuildings() const;
+
 private:
 	void handleOnTilemapClick(const sf::Event& event);
 
