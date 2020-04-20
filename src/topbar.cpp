@@ -11,11 +11,11 @@
 
 void Topbar::setupSound()
 {
-	myFailureSoundBuffer.loadFromFile("failure.wav");
-	mySuccessSoundBuffer.loadFromFile("click.wav");
-	myNukeRadiationSoundBuffer.loadFromFile("nuke_radiation.wav");
-	myNukeExplosionSoundBuffer.loadFromFile("nuke_explosion.wav");
-	myEarthquakeSoundBuffer.loadFromFile("earthquake.wav");
+	myFailureSoundBuffer.loadFromFile("resources/failure.wav");
+	mySuccessSoundBuffer.loadFromFile("resources/click.wav");
+	myNukeRadiationSoundBuffer.loadFromFile("resources/nuke_radiation.wav");
+	myNukeExplosionSoundBuffer.loadFromFile("resources/nuke_explosion.wav");
+	myEarthquakeSoundBuffer.loadFromFile("resources/earthquake.wav");
 
 	mySuccessSound.setBuffer(mySuccessSoundBuffer);
 	myFailureSound.setBuffer(myFailureSoundBuffer);
@@ -31,11 +31,11 @@ void Topbar::setupSound()
 void Topbar::setupBuildings()
 {
 	// Power Plant
-	auto building = std::make_unique<Building>("Power Plant", "powerplant.png", 5, -0.01, 0.2, false, false);
+	auto building = std::make_unique<Building>("Power Plant", "resources/powerplant.png", 5, -0.01, 0.2, false, false);
 	myBuildingsDatabase.push_back(std::move(building));
 
 	// Atmospheric Plant
-	building = std::make_unique<Building>("Atmo Plant", "atmoplant.png", 10, 0.005, -0.1, false, false, [](Earth& earth, const Tile& tile){
+	building = std::make_unique<Building>("Atmo Plant", "resources/atmoplant.png", 10, 0.005, -0.1, false, false, [](Earth& earth, const Tile& tile){
 		if(!earth.getTilemap().canHaveCloud(tile.getPos()))
 			return;
 
@@ -49,11 +49,11 @@ void Topbar::setupBuildings()
 	myBuildingsDatabase.push_back(std::move(building));
 
 	// Water Plant
-	building = std::make_unique<Building>("Water Plant", "waterplant.png", 15, -0.03, 0.8, false, false);
+	building = std::make_unique<Building>("Water Plant", "resources/waterplant.png", 15, -0.03, 0.8, false, false);
 	myBuildingsDatabase.push_back(std::move(building));
 
 	// Scrubber
-	building = std::make_unique<Building>("Scrubber", "scrubber.png", 50, 0.05, -0.8, false, false, [](Earth& earth, const Tile& tile){
+	building = std::make_unique<Building>("Scrubber", "resources/scrubber.png", 50, 0.05, -0.8, false, false, [](Earth& earth, const Tile& tile){
 		int chance = rand() % 5;
 		if(chance == 0)
 		{
@@ -65,11 +65,11 @@ void Topbar::setupBuildings()
 	myBuildingsDatabase.push_back(std::move(building));
 
 	// Fusion Plant
-	building = std::make_unique<Building>("Fusion Plant", "fusionplant.png", 100, 0.0, 1.0, false, false);
+	building = std::make_unique<Building>("Fusion Plant", "resources/fusionplant.png", 100, 0.0, 1.0, false, false);
 	myBuildingsDatabase.push_back(std::move(building));
 
 	// Biomass Generator
-	building = std::make_unique<Building>("Biomass Gen", "biomassgen.png", 200, 0.0, -0.05, false, false, [](Earth& earth, const Tile& tile){
+	building = std::make_unique<Building>("Biomass Gen", "resources/biomassgen.png", 200, 0.0, -0.05, false, false, [](Earth& earth, const Tile& tile){
 		int chance = rand() % 5;
 		if(chance == 0)
 		{
@@ -81,7 +81,7 @@ void Topbar::setupBuildings()
 	myBuildingsDatabase.push_back(std::move(building));
 
 	// Terraformer
-	building = std::make_unique<Building>("Terraformer", "terraformer.png", 25, 0, 0, false, true, [this](Earth& earth, const Tile& tile){
+	building = std::make_unique<Building>("Terraformer", "resources/terraformer.png", 25, 0, 0, false, true, [this](Earth& earth, const Tile& tile){
 		auto& tilemap = earth.accessTilemap();
 		auto pos = tile.getPos();
 		tilemap.applyFunctionInSphere(pos, 2, [&tilemap, pos, this](const Tile& tile)
@@ -107,7 +107,7 @@ void Topbar::setupBuildings()
 	});
 	myBuildingsDatabase.push_back(std::move(building));
 	// Nuke
-	building = std::make_unique<Building>("Nuke", "nuke.png", 100, 0, 0, false, true, [this](Earth& earth, const Tile& tile){
+	building = std::make_unique<Building>("Nuke", "resources/nuke.png", 100, 0, 0, false, true, [this](Earth& earth, const Tile& tile){
 		auto& tilemap = earth.accessTilemap();
 		auto pos = tile.getPos();
 		tilemap.applyFunctionInSphere(pos, 5, [&tilemap, pos, this](const Tile& tile)
@@ -136,7 +136,7 @@ void Topbar::setupBuildings()
 	myBuildingsDatabase.push_back(std::move(building));
 
 	// Polluter
-	building = std::make_unique<Building>("Polluter", "waterplant.png", 0, -0.01, 0.0, true, true, [](Earth& earth, const Tile& tile){
+	building = std::make_unique<Building>("Polluter", "resources/waterplant.png", 0, -0.01, 0.0, true, true, [](Earth& earth, const Tile& tile){
 		if(!earth.getTilemap().canHaveCloud(tile.getPos()))
 			return;
 
@@ -150,7 +150,7 @@ void Topbar::setupBuildings()
 	myBuildingsDatabase.push_back(std::move(building));
 
 	// Comet - Easteregg
-	building = std::make_unique<Building>("Comet", "waterplant.png", 0, 0, 0, true, true, [this](Earth& earth, const Tile& tile){
+	building = std::make_unique<Building>("Comet", "resources/waterplant.png", 0, 0, 0, true, true, [this](Earth& earth, const Tile& tile){
 		auto& tilemap = earth.accessTilemap();
 		auto pos = tile.getPos();
 		tilemap.applyFunctionInSphere(pos, 7, [&tilemap, pos, this](const Tile& tile)
@@ -171,7 +171,7 @@ void Topbar::setupBuildings()
 void Topbar::setupGui(Earth& earth, sf::Vector2i targetSize, const Camera2D& camera)
 {
 	auto texture = std::make_unique<sf::Texture>();
-	texture->loadFromFile("topbar.png");
+	texture->loadFromFile("resources/topbar.png");
 	auto sprite = std::make_unique<sf::Sprite>(*texture);
 	myBackground = std::move(sprite);
 	myTextures.push_back(std::move(texture));
@@ -225,7 +225,7 @@ void Topbar::setupGui(Earth& earth, sf::Vector2i targetSize, const Camera2D& cam
 	myObjects.push_back(std::move(label));
 
 	texture = std::make_unique<sf::Texture>();
-	texture->loadFromFile("normalspeed.png");
+	texture->loadFromFile("resources/normalspeed.png");
 	auto button = std::make_unique<Button>(*texture, "");
 	button->attachOnClickHook([this](){
 		myTimestep = Normal;
@@ -236,7 +236,7 @@ void Topbar::setupGui(Earth& earth, sf::Vector2i targetSize, const Camera2D& cam
 	myTextures.push_back(std::move(texture));
 
 	texture = std::make_unique<sf::Texture>();
-	texture->loadFromFile("fastspeed.png");
+	texture->loadFromFile("resources/fastspeed.png");
 	button = std::make_unique<Button>(*texture, "");
 	button->attachOnClickHook([this](){
 		myTimestep = Fast;
@@ -247,7 +247,7 @@ void Topbar::setupGui(Earth& earth, sf::Vector2i targetSize, const Camera2D& cam
 	myTextures.push_back(std::move(texture));
 
 	texture = std::make_unique<sf::Texture>();
-	texture->loadFromFile("fasterspeed.png");
+	texture->loadFromFile("resources/fasterspeed.png");
 	button = std::make_unique<Button>(*texture, "");
 	button->attachOnClickHook([this](){
 		myTimestep = Faster;
@@ -258,7 +258,7 @@ void Topbar::setupGui(Earth& earth, sf::Vector2i targetSize, const Camera2D& cam
 	myTextures.push_back(std::move(texture));
 
 	texture = std::make_unique<sf::Texture>();
-	texture->loadFromFile("toggleclouds.png");
+	texture->loadFromFile("resources/toggleclouds.png");
 	button = std::make_unique<Button>(*texture, "");
 	button->attachOnClickHook([&earth, this](){
 		earth.accessTilemap().toggleClouds();
@@ -269,7 +269,7 @@ void Topbar::setupGui(Earth& earth, sf::Vector2i targetSize, const Camera2D& cam
 	myTextures.push_back(std::move(texture));
 
 	texture = std::make_unique<sf::Texture>();
-	texture->loadFromFile("homeostasis.png");
+	texture->loadFromFile("resources/homeostasis.png");
 	// Large Homeostasis Icon
 	sprite = std::make_unique<sf::Sprite>(*texture);
 	sprite->move(4, 0);
@@ -277,7 +277,7 @@ void Topbar::setupGui(Earth& earth, sf::Vector2i targetSize, const Camera2D& cam
 	myTextures.push_back(std::move(texture));
 
 	texture = std::make_unique<sf::Texture>();
-	texture->loadFromFile("energy.png");
+	texture->loadFromFile("resources/energy.png");
 	// Large Energy Icon
 	sprite = std::make_unique<sf::Sprite>(*texture);
 	sprite->move(4, 32);
@@ -292,7 +292,7 @@ void Topbar::setupGui(Earth& earth, sf::Vector2i targetSize, const Camera2D& cam
 
 	// Building Info Homeostasis Change Icon
 	texture = std::make_unique<sf::Texture>();
-	texture->loadFromFile("homeostasis_decay.png");
+	texture->loadFromFile("resources/homeostasis_decay.png");
 	sprite = std::make_unique<sf::Sprite>(*texture);
 	sprite->move(416, 112);
 	sprite->setScale(0.5f, 0.5f);
@@ -301,7 +301,7 @@ void Topbar::setupGui(Earth& earth, sf::Vector2i targetSize, const Camera2D& cam
 
 	// Building Info Energy Change Icon
 	texture = std::make_unique<sf::Texture>();
-	texture->loadFromFile("energy_decay.png");
+	texture->loadFromFile("resources/energy_decay.png");
 	sprite = std::make_unique<sf::Sprite>(*texture);
 	sprite->move(416, 130);
 	sprite->setScale(0.5f, 0.5f);

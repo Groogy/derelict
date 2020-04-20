@@ -7,7 +7,7 @@
 #include <cmath>
 
 Earth::Earth()
-: myTilemap("earth.png")
+: myTilemap("resources/earth.png")
 {
 	generateSphere(10.0);
 }

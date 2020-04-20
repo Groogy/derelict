@@ -20,15 +20,15 @@ GameState::GameState(sf::RenderWindow& window)
 {
 	myRenderer.accessCamera().setOffset(14.1);
 
-	myEarthShader.loadFromFile("earth.vertex", "earth.fragment");
-	myTilemapShader.loadFromFile("default.vertex", "tilemap.fragment");
+	myEarthShader.loadFromFile("resources/earth.vertex", "resources/earth.fragment");
+	myTilemapShader.loadFromFile("resources/default.vertex", "resources/tilemap.fragment");
 	myEarthShader.setUniform("terrainSampler", myEarth.getTilemap().getTexture());
 
 	myTopbar.setupSound();
 	myTopbar.setupBuildings();
 	myTopbar.setupGui(myEarth, static_cast<sf::Vector2i>(myWindow.getSize()), myCamera);
 
-	myFont.loadFromFile("default.ttf");
+	myFont.loadFromFile("resources/default.ttf");
 	myNotification.setFont(myFont);
 	myNotification.setPosition(10, 400);
 	myNotification.setFillColor(sf::Color::Red);
@@ -37,7 +37,7 @@ GameState::GameState(sf::RenderWindow& window)
 
 	for(int i = 0; i < 4; i++)
 	{
-		myHumanSpawnSoundBuffers[i].loadFromFile("human_spawn" + std::to_string(i+1) + ".wav");
+		myHumanSpawnSoundBuffers[i].loadFromFile("resources/human_spawn" + std::to_string(i+1) + ".wav");
 		myHumanSpawnSounds[i].setBuffer(myHumanSpawnSoundBuffers[i]);
 		myHumanSpawnSounds[i].setVolume(i == 3 ? 10.0 : 40.0);
 	}

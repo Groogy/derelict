@@ -11,7 +11,7 @@ IntroState::IntroState(sf::RenderWindow& window)
 {
 	auto targetSize = myWindow.getSize();
 
-	myFont.loadFromFile("default.ttf");
+	myFont.loadFromFile("resources/default.ttf");
 	myClickToContinue.setFont(myFont);
 	myClickToContinue.setCharacterSize(36);
 	myClickToContinue.setFillColor(sf::Color::Green);
@@ -26,7 +26,7 @@ IntroState::IntroState(sf::RenderWindow& window)
 
 	for(int i = 0; i < 10; i++)
 	{
-		myBeepBuffers[i].loadFromFile("beep" + std::to_string(i+1) + ".wav");
+		myBeepBuffers[i].loadFromFile("resources/beep" + std::to_string(i+1) + ".wav");
 		myBeepSounds[i].setBuffer(myBeepBuffers[i]);
 		myBeepSounds[i].setVolume(5.0);
 	}

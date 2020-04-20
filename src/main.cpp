@@ -18,7 +18,7 @@ int main()
 	sf::RenderWindow window(sf::VideoMode(1280, 800), "Derelict: Gaia Protocol", sf::Style::Default, settings);
 
 	sf::Music music;
-	music.openFromFile("music.wav");
+	music.openFromFile("resources/music.wav");
 	music.setVolume(5.0);
 	music.setLoop(true);
 	music.play();

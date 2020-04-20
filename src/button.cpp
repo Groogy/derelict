@@ -58,7 +58,7 @@ void Button::setupFont()
 	if(ourFont == nullptr)
 	{
 		ourFont = std::make_unique<sf::Font>();
-		ourFont->loadFromFile("default.ttf");
+		ourFont->loadFromFile("resources/default.ttf");
 	}
 }
 
